@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js First Scene</title>
+  <style>
+    /* CSS で body のマージンをなくし、canvas が全画面表示されるようにする */
+    body { margin: 0; }
+    canvas { display: block; } /* canvas 要素が持つ余白対策 */
+    </style>
+</head>
+<body>
+  <!-- Three.js のスクリプトを読み込む -->
+  <!-- ここにスクリプトを記述 -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    
+    // シーンを作成
+    const scene = new THREE.Scene();
+
+    // カメラを作成
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    // レンダラーを作成
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // ジオメトリとマテリアルを作成し、メッシュを生成
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    // アニメーションループを定義
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // キューブを回転させる
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+
+      // シーンをレンダリング
+      renderer.render(scene, camera);
+    }
+
+    // アニメーションを開始
+    animate();
+
+    // ウィンドウリサイズ時にカメラとレンダラーのサイズを更新
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
