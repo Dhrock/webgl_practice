@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+}
+
+#container {
+  margin-top: 150px;
+  margin-inline: auto;
+  display: block;
+  width: 80%;
+  height: 70vh;
+  position: relative;
+}
+#container img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+#container canvas {
+  position: absolute;
+  inset: 0;
+}

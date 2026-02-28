@@ -1,0 +1,24 @@
+body { 
+  margin: 0;
+}
+
+#container { 
+  margin-top: 150px;
+  margin-inline: auto;
+  display: block;
+  width: 80%;
+  height: 70vh;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  canvas {
+    // opacity: 0;
+    position: absolute;
+    inset: 0;
+  }
+}
