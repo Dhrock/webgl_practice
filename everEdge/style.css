@@ -3,11 +3,11 @@ body {
 }
 
 #container {
-  margin-top: 150px;
-  margin-inline: auto;
+  margin: 100px auto;
   display: block;
   width: 80%;
-  height: 70vh;
+  height: auto;
+  aspect-ratio: 3/2;
   position: relative;
 }
 #container img {
@@ -15,6 +15,7 @@ body {
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+  opacity: 0;
 }
 #container canvas {
   position: absolute;
