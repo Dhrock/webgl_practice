@@ -1,47 +1,34 @@
-// // シーンを作成
-// const scene = new THREE.Scene();
-
-// // カメラを作成
-// const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-// camera.position.z = 5;
-
-// // レンダラーを作成
-// const renderer = new THREE.WebGLRenderer({ antialias: true });
-// const container = document.getElementById('container');
-// container.appendChild(renderer.domElement);
-
-// // ジオメトリとマテリアルを作成し、メッシュを生成
-// const planeGeometry = new THREE.PlaneGeometry(4, 4, 1, 1);
-// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// const plane = new THREE.Mesh(planeGeometry, material);
-// scene.add(plane);
-
 // --- 1. Basic Three.js Setup ---
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const container = document.getElementById('container');
 
+const frustumSize = 2.5;
+const aspect = container.clientWidth / container.clientHeight;
+const camera = new THREE.OrthographicCamera(
+  -frustumSize * aspect / 2, frustumSize * aspect / 2,
+  frustumSize / 2, -frustumSize / 2,
+  0.1, 1000
+);
 camera.position.z = 2;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-const container = document.getElementById('container');
 container.appendChild(renderer.domElement);
 
 // --- 2. Texture Loading ---
 // 添付画像のURL（もし読み込めない場合は、適当な画像URLに変更してください）
-const textureUrl = 'image/sample02.jpg'; // テクスチャ画像
+const textureUrl = 'image/sample04.jpg'; // テクスチャ画像
 const texture = new THREE.TextureLoader().load(
   textureUrl,
-  // ロード完了時のコールバック（アスペクト比を調整するため）
   (t) => {
-    const aspect = t.image.width / t.image.height;
-    // アスペクト比に合わせて平面をスケーリング
-    mesh.scale.set(aspect, 1, 1);
+    // 画像解像度をuniformに設定
+    uniforms.uImageResolution.value.set(t.image.width, t.image.height);
+    const aspect_img = t.image.width / t.image.height;
+    mesh.scale.set(aspect_img, 1, 1);
   }
 );
 // テクスチャを繰り返さない設定に
 texture.wrapS = THREE.ClampToEdgeWrapping;
 texture.wrapT = THREE.ClampToEdgeWrapping;
-
 
 // --- 3. ShaderMaterial Creation ---
 // ジオメトリのセグメント数を多めにして、歪みを滑らかに
@@ -49,7 +36,9 @@ const geometry = new THREE.PlaneGeometry(2.5, 2.5, 100, 100);
 
 const uniforms = {
   uTexture: { value: texture },
-  uTime: { value: 0.0 }
+  uResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) }, // コンテナの解像度
+  uImageResolution: { value: new THREE.Vector2(1, 1) } // 画像解像度（ロード後に更新）
+  // uTime: { value: 0.0 }
 };
 
 const material = new THREE.ShaderMaterial({
@@ -67,25 +56,39 @@ const material = new THREE.ShaderMaterial({
   fragmentShader: `
     varying vec2 vUv;
     uniform sampler2D uTexture;
-    uniform float uTime;
+    uniform vec2 uResolution;      // コンテナサイズ
+    uniform vec2 uImageResolution; // 画像サイズ
 
     void main() {      
+      // --- 1. アスペクト比補正 (Object-fit: cover) ---
+      float screenAspect = uResolution.x / uResolution.y;
+      float imageAspect = uImageResolution.x / uImageResolution.y;
+      
+      // coverの場合: 短い辺に合わせてスケール → はみ出す側を切る
+      vec2 scale = vec2(
+        max(screenAspect / imageAspect, 1.0),
+        max(imageAspect / screenAspect, 1.0)
+      );
+
+      // UV を scale で割って縮小し、中央揃え
+      vec2 correctedUv = (vUv - 0.5) / scale + 0.5;
+      
       // --- ここから不均一スライスの計算 ---
-      float numSlices = 11.0; // 全体のスライス数
+      float numSlices = 31.0; // 全体のスライス数
 
       // 歪んだUVでスライスIDを決定する
-      float sliceId = floor(vUv.x * numSlices);
+      float sliceId = floor(correctedUv.x * numSlices);
       
-      // 中央のスライスIDを基準にオフセットを計算
+      // 中央のスライスIDを基準にオフセットを計算する
       float center = (numSlices - 1.0) / 2.0;
       float distFromCenter = sliceId - center;
-      float offset = sin(uTime * 0.3) * 0.4 * distFromCenter * -0.08;
-      // float offset = 0.0;
+      // offset も scale.x で割って、UV空間でのサイズを合わせる
+      float offset = sin(1.5) * 0.4 * distFromCenter * -0.03 / scale.x;
       
       // --- 色収差 (RGB Split) ---
-      float r = texture2D(uTexture, vUv + vec2(offset, 0.0)).r;
-      float g = texture2D(uTexture, vUv + vec2(offset, 0.0)).g;
-      float b = texture2D(uTexture, vUv + vec2(offset, 0.0)).b;
+      float r = texture2D(uTexture, correctedUv + vec2(offset, 0.0)).r;
+      float g = texture2D(uTexture, correctedUv + vec2(offset * 1.03, 0.0)).g;
+      float b = texture2D(uTexture, correctedUv + vec2(offset * 1.05, 0.0)).b;
       
       gl_FragColor = vec4(r, g, b, 1.0);
     }
@@ -102,7 +105,7 @@ const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
-  uniforms.uTime.value = clock.getElapsedTime();
+  // uniforms.uTime.value = clock.getElapsedTime();
   renderer.render(scene, camera);
 }
 
@@ -114,8 +117,14 @@ function resizeToContainer() {
   const height = container.clientHeight;
   if (!width || !height) return;
 
-  camera.aspect = width / height;
+  const aspect = width / height;
+  camera.left = -frustumSize * aspect / 2;
+  camera.right = frustumSize * aspect / 2;
+  camera.top = frustumSize / 2;
+  camera.bottom = -frustumSize / 2;
   camera.updateProjectionMatrix();
+
+  uniforms.uResolution.value.set(width, height);
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(width, height, false);

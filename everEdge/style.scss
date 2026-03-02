@@ -1,5 +1,6 @@
 body { 
   margin: 0;
+  background-color: rgb(41, 0, 0);
 }
 
 #container { 
@@ -8,6 +9,7 @@ body {
   width: 80%;
   height: auto;
   aspect-ratio: 3 / 2;
+  overflow: hidden;
   position: relative;
 
   img {

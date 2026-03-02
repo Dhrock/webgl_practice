@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glitch Staggered Glass Effect</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    // --- 1. Basic Three.js Setup ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 2;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // --- 3. Texture Loading ---
+    const textureUrl = 'image/sample02.jpg'; // お手元の画像パスに合わせてください
+    const texture = new THREE.TextureLoader().load(textureUrl, (t) => {
+      const aspect = t.image.width / t.image.height;
+      mesh.scale.set(aspect, 1, 1);
+    });
+
+    // --- 4. ShaderMaterial Creation ---
+    // 2枚目の画像の鋭さを出すため、スライス数を増やし、計算を「ステップ状」にします
+    const geometry = new THREE.PlaneGeometry(2, 2, 32, 32);
+
+    const uniforms = {
+      uTexture: { value: texture },
+      uTime: { value: 0.0 }
+    };
+
+    const material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        uniform sampler2D uTexture;
+
+        void main() {
+          // 1. スライス数（分割の細かさ）
+          float numSlices = 100.0;
+          float sliceId = floor(vUv.x * numSlices);
+          
+          // 2. 規則的なステップ（リズムのあるズレ）
+          // sin波をベースにすることで、ランダムではなく周期的なパターンを作ります
+          // 0.5は波の細かさ、0.15はズレの最大幅です
+          float offset = sin(sliceId * 0.1) * 0.001;
+          
+          // さらに別の周期を重ねることで、単調すぎない「デザインされた」ズレにします
+          offset += cos(sliceId * 0.2) * 0.05;
+          
+          vec2 distUv = vUv;
+          distUv.y += offset;
+
+          // 3. 固定の色収差（RGB Split）
+          // 最初の画像のような虹色のエッジを作ります
+          float colorSplit = 0.015;
+          
+          vec3 color;
+          color.r = texture2D(uTexture, distUv + vec2(colorSplit, 0.0)).r;
+          color.g = texture2D(uTexture, distUv).g;
+          color.b = texture2D(uTexture, distUv - vec2(colorSplit, 0.0)).b;
+
+          // サンプリング保護（if文）を削除したため、
+          // 座標がUVの0-1を超えた場合はテクスチャの端の色が引き伸ばされます。
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    // --- 5. Animation Loop ---
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      // 時間の更新を追加
+      uniforms.uTime.value = clock.getElapsedTime();
+      
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // --- 6. Resize Handling ---
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
