@@ -22,7 +22,7 @@
     document.body.appendChild(renderer.domElement);
 
     // --- 3. Texture Loading ---
-    const textureUrl = 'image/sample02.jpg'; // お手元の画像パスに合わせてください
+    const textureUrl = '/everEdge/assets/image/sample02.jpg'; // お手元の画像パスに合わせてください
     const texture = new THREE.TextureLoader().load(textureUrl, (t) => {
       const aspect = t.image.width / t.image.height;
       mesh.scale.set(aspect, 1, 1);
