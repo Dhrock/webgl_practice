@@ -16,7 +16,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 container.appendChild(renderer.domElement);
 
 // --- 2. Texture Loading ---
-const textureUrl = '/everEdge/assets/image/sample04.jpg'; // テクスチャ画像
+const textureUrl = container.querySelector('img').src; // テクスチャ画像
 const texture = new THREE.TextureLoader().load(
   textureUrl,
   (t) => {
@@ -30,7 +30,7 @@ texture.wrapT = THREE.ClampToEdgeWrapping;
 
 // --- 3. ShaderMaterial Creation ---
 // ジオメトリのセグメント数を多めにして、歪みを滑らかに
-const geometry = new THREE.PlaneGeometry(2.5, 2.5, 100, 100);
+const geometry = new THREE.PlaneGeometry(2.5, 2.5, 200, 200);
 
 const uniforms = {
   uTexture: { value: texture },
@@ -70,11 +70,6 @@ const material = new THREE.ShaderMaterial({
         ratio >= 1.0 ? ratio : 1.0,
         ratio <  1.0 ? 1.0 / ratio : 1.0
       );
-
-      vec2 correctedUv = vec2(
-        (vUv.x - 0.5) * scale.x + 0.5,
-        (vUv.y - 0.5) * scale.y + 0.5
-      );
       
       // ---------- screen slices ----------
 
@@ -100,7 +95,7 @@ const material = new THREE.ShaderMaterial({
       float distortionStrength = 0.1;
 
       // スライスの中心が参照すべきテクスチャU座標
-      // correctedUv.x の代わりに、スライス中心のscreen位置から算出
+      // スライス中心のscreen位置から算出
       float sliceCenterScreen = (sliceId + 0.5) * sliceWidth / uContainerResolution.x; // 0~1
 
       // cover補正を適用
@@ -122,7 +117,7 @@ const material = new THREE.ShaderMaterial({
       // ---------- final uv ----------
       float finalU = sliceCenterU + offset + localOffset;
 
-      vec2 finalUv = vec2(finalU, correctedUv.y);
+      vec2 finalUv = vec2(finalU, vUv.y);
 
       // 範囲外をクランプ
       finalUv = clamp(finalUv, 0.0, 1.0);
@@ -152,7 +147,7 @@ function animate() {
 
 animate();
 
-// --- 6. Resize Handling ---
+// --- 6. 画面リサイズのハンドラー ---
 function resizeToContainer() {
   const width = container.clientWidth;
   const height = container.clientHeight;

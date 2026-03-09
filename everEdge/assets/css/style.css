@@ -18,8 +18,59 @@ body {
   -o-object-fit: cover;
      object-fit: cover;
   opacity: 0;
+  visibility: hidden;
 }
 #container canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hover-effect .flexbox-col2 {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 90%;
+  margin: 100px auto;
+}
+.hover-effect .flexbox-col2 .container {
+  display: block;
+  width: 48%;
+  height: auto;
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  position: relative;
+}
+.hover-effect .flexbox-col3 {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 90%;
+  margin: 100px auto;
+}
+.hover-effect .flexbox-col3 .container {
+  display: block;
+  width: 30%;
+  height: auto;
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  position: relative;
+}
+.hover-effect img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  opacity: 0;
+}
+.hover-effect canvas {
   position: absolute;
   inset: 0;
   width: 100%;

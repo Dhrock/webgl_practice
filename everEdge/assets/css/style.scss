@@ -3,6 +3,7 @@ body {
   background-color: #F4F0EC;
 }
 
+// index.html
 #container { 
   margin: 100px auto;
   display: block;
@@ -11,6 +12,56 @@ body {
   aspect-ratio: 3 / 2;
   overflow: hidden;
   position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// ホバーエフェクトページ
+.hover-effect {
+  .flexbox-col2 {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: 100px auto;
+    
+    .container { 
+      display: block;
+      width: 48%;
+      height: auto;
+      aspect-ratio: 3 / 2;
+      overflow: hidden;
+      position: relative;
+    }
+  }
+
+  .flexbox-col3 {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: 100px auto;
+    
+    .container { 
+      display: block;
+      width: 30%;
+      height: auto;
+      aspect-ratio: 3 / 2;
+      overflow: hidden;
+      position: relative;
+    }
+  }
 
   img {
     width: 100%;
@@ -26,4 +77,5 @@ body {
     width: 100%;
     height: 100%;
   }
+
 }
