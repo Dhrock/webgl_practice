@@ -84,7 +84,7 @@ containers.forEach((container) => {
       uniform float uSliceWidth;
 
       void main() {
-        float mousePresence = clamp((uMouse.x + 1.0) * 0.5, 0.0, 1.0);
+        float mousePresence = smoothstep(-1.0, 1.0, uMouse.x);
         
         // --- x軸のcover補正のみ ---
         float screenAspect = uContainerResolution.x / uContainerResolution.y;
@@ -160,7 +160,7 @@ containers.forEach((container) => {
   function animate() {
     requestAnimationFrame(animate);
 
-    mouse.x += (targetMouse.x - mouse.x) * 0.4;
+    mouse.x += (targetMouse.x - mouse.x) * 0.15;
 
     renderer.render(scene, camera);
   }
