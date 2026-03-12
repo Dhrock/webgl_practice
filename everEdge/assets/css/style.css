@@ -45,6 +45,9 @@ body {
   overflow: hidden;
   position: relative;
 }
+.hover-effect .flexbox-col2 .container.-long {
+  aspect-ratio: 645/900;
+}
 .hover-effect .flexbox-col3 {
   display: -webkit-box;
   display: -ms-flexbox;

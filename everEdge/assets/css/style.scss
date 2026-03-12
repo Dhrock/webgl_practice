@@ -44,6 +44,10 @@ body {
       aspect-ratio: 3 / 2;
       overflow: hidden;
       position: relative;
+
+      &.-long {
+        aspect-ratio: 645 / 900;
+      }
     }
   }
 
