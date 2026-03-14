@@ -1,6 +1,12 @@
 body { 
   margin: 0;
-  background-color: #F4F0EC;
+  background-color: #ffffff;
+}
+
+h2 {
+  margin: 100px auto 30px;
+  width: 90%;
+  font-size: 26px;
 }
 
 // index.html
@@ -31,22 +37,44 @@ body {
 
 // ホバーエフェクトページ
 .hover-effect {
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   .flexbox-col2 {
     display: flex;
     justify-content: space-between;
     width: 90%;
-    margin: 100px auto;
+    margin: 0 auto 100px;
     
     .container { 
       display: block;
       width: 48%;
       height: auto;
       aspect-ratio: 3 / 2;
-      overflow: hidden;
+      // overflow: hidden;
       position: relative;
 
       &.-long {
         aspect-ratio: 645 / 900;
+      }
+
+      p {
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        font-size: 18px;
+        z-index: 1;
       }
     }
   }
@@ -55,7 +83,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 90%;
-    margin: 100px auto;
+    margin: 0 auto 100px;
     
     .container { 
       display: block;
@@ -67,6 +95,31 @@ body {
     }
   }
 
+  .mv {
+    width: 70%;
+    margin: 0 auto 100px;
+
+    .container {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 645 / 900;
+      overflow: hidden;
+      position: relative;
+
+      &+.container {
+        margin-top: 100px;
+      }
+    }
+  }
+}
+
+// mvのインタラクションページ
+.mv-interaction {
+  main {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
   img {
     width: 100%;
     height: 100%;
@@ -75,11 +128,16 @@ body {
   }
 
   canvas {
-    // opacity: 0;
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
   }
 
+  .container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
 }

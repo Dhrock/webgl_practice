@@ -1,8 +1,8 @@
 const containers = document.querySelectorAll('.container');
 
-const sliceNum = 18; // スライス数（ピクセル単位での幅は、リサイズ時に計算）
-
 containers.forEach((container) => {
+  const sliceNum = container.classList.contains('-minute-slice') ? 28 : 18; // スライス数（ピクセル単位での幅は、リサイズ時に計算）
+
   // --- 1. Basic Three.js Setup ---
   const scene = new THREE.Scene();
 
@@ -84,7 +84,7 @@ containers.forEach((container) => {
       uniform float uSliceWidth;
 
       void main() {
-        float mousePresence = smoothstep(-1.0, 1.0, uMouse.x);
+        float mousePresence = clamp((uMouse.x + 1.0) * 0.5, 0.0, 1.0);
         
         // --- x軸のcover補正のみ ---
         float screenAspect = uContainerResolution.x / uContainerResolution.y;
@@ -160,7 +160,7 @@ containers.forEach((container) => {
   function animate() {
     requestAnimationFrame(animate);
 
-    mouse.x += (targetMouse.x - mouse.x) * 0.15;
+    mouse.x += (targetMouse.x - mouse.x) * 0.3;
 
     renderer.render(scene, camera);
   }
