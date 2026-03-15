@@ -6,13 +6,9 @@ containers.forEach((container) => {
   // --- 1. Basic Three.js Setup ---
   const scene = new THREE.Scene();
 
-  const frustumSize = 2.49;
-  const aspect = container.clientWidth / container.clientHeight;
-  const camera = new THREE.OrthographicCamera(
-    -frustumSize * aspect / 2, frustumSize * aspect / 2,
-    frustumSize / 2, -frustumSize / 2,
-    0.1, 1000
-  );
+  // 固定正射影カメラ（-1〜1の正規化座標でcanvasを常に覆う）
+  // アスペクト比の補正はシェーダー側のcover計算で行う
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
   camera.position.z = 2;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -24,8 +20,10 @@ containers.forEach((container) => {
   const texture = new THREE.TextureLoader().load(
     textureUrl,
     (t) => {
-      mesh.scale.set(aspect, 1, 1);
       uniforms.uTexture.value = t;
+
+      // 画像の実サイズをuniformに反映（object-fit: cover計算に使用）
+      uniforms.uImageResolution.value.set(t.image.width, t.image.height);
 
       // ミップマップ + アニソトロピックフィルタリングで解像度を維持
       t.generateMipmaps = true;
@@ -53,7 +51,7 @@ containers.forEach((container) => {
   });
 
   // --- 4. ShaderMaterial Creation ---
-  const geometry = new THREE.PlaneGeometry(2.5, 2.5, 100, 100);
+  const geometry = new THREE.PlaneGeometry(2, 2, 100, 100); // カメラ座標（-1〜1）にぴったり合わせた2×2サイズ
 
   const slideWidth = container.clientWidth / sliceNum; // スライス幅（ピクセル単位）
 
@@ -89,8 +87,14 @@ containers.forEach((container) => {
         // --- x軸のcover補正のみ ---
         float screenAspect = uContainerResolution.x / uContainerResolution.y;
         float imageAspect = uImageResolution.x / uImageResolution.y;
-        float ratio = screenAspect / imageAspect;
-        float scaleX = ratio >= 1.0 ? ratio : 1.0;
+        float r = screenAspect / imageAspect;
+        // r >= 1: コンテナが横長 → x全体を表示、yをトリミング
+        // r <  1: コンテナが縦長 → y全体を表示、xをトリミング
+        float scaleU = r < 1.0 ? r : 1.0;       // x UV圧縮率
+        float scaleV = r >= 1.0 ? 1.0 / r : 1.0; // y UV圧縮率
+
+        // y方向のcover補正
+        float coverV = (vUv.y - 0.5) * scaleV + 0.5;
         
         // ---------- screen slices ----------
 
@@ -114,10 +118,10 @@ containers.forEach((container) => {
         float sliceCenterScreen = (sliceId + 0.5) * sliceWidth / uContainerResolution.x;
 
         // cover補正を適用
-        float sliceCenterU = (sliceCenterScreen - 0.5) / scaleX + 0.5;
+        float sliceCenterU = (sliceCenterScreen - 0.5) * scaleU + 0.5;
 
         // 歪みオフセット: 中央から離れるほど外側にずらす
-        float offsetSign = ratio >= 1.0 ? 1.0 : -1.0;
+        float offsetSign = -0.5;
         float offset = offsetSign * distortionStrength * normalized;
 
         // ---------- compression ----------
@@ -134,17 +138,18 @@ containers.forEach((container) => {
         // ---------- final uv ----------
         float distortedU = sliceCenterU + offset + localOffset;
 
-        // mousePresenceで通常UVと歪みUVをmix
-        float finalU = mix(vUv.x, distortedU, mousePresence);
+        // mousePresenceで通常UV（cover補正済み）と歪みUVをmix
+        float coverU = (vUv.x - 0.5) * scaleU + 0.5;
+        float finalU = mix(coverU, distortedU, mousePresence);
 
-        vec2 finalUv = vec2(finalU, vUv.y);
+        // y方向はcover補正のみ（distortionなし）
+        vec2 finalUv = vec2(finalU, coverV);
 
         // 範囲外をクランプ
         finalUv = clamp(finalUv, 0.0, 1.0);
 
         // --- サンプリング ---
         vec4 color = texture2D(uTexture, finalUv);
-        // vec4 color = texture2D(uTexture, vUv);
 
         gl_FragColor = color;
       }
@@ -173,12 +178,7 @@ containers.forEach((container) => {
     const height = container.clientHeight;
     if (!width || !height) return;
 
-    const newAspect = width / height;
-    camera.left   = -frustumSize * newAspect / 2;
-    camera.right  =  frustumSize * newAspect / 2;
-    camera.top    =  frustumSize / 2;
-    camera.bottom = -frustumSize / 2;
-    camera.updateProjectionMatrix();
+    // 固定カメラのため射影行列の更新不要（cover補正はシェーダーが担う）
 
     // デバイスピクセル比を考慮してレンダラーサイズを調整
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
