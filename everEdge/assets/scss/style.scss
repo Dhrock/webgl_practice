@@ -1,0 +1,21 @@
+// 各ファイルに該当するクラス名のプレフィックスがある場合は記載
+// 「_」から始まるクラス名は単体でCSSの指定をしない BEMのModifierの使い方
+// 「-」から始まるクラス名は単体でCSSの指定をしない BEMのElementsの使い方
+
+
+@use "setting/reset";
+@use "setting/base";
+
+// @use "vendor/";
+
+@use "module/module";
+@use "module/utility";
+
+@use "layout/header";
+@use "layout/footer";
+@use "layout/menu";
+@use "layout/layout";
+
+@use "page/common";
+@use "page/hover-effect";
+@use "page/mv-interaction";

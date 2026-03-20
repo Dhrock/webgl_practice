@@ -1,0 +1,68 @@
+@use '../setting/global' as *;
+/* ========================================
+補助的に使用 u-
+======================================== */
+
+.u-sp {
+  @include mq(md-up) {
+    display: none!important;
+  }
+}
+
+.u-pc {
+  @include mq() {
+    display: none!important;
+  }
+}
+
+.u-ib {
+  display: inline-block!important;
+}
+
+.u-text {
+  &-center {
+    text-align: center!important;
+  }
+
+  &-left {
+    text-align: left!important;
+  }
+
+  &-right {
+    text-align: right!important;
+  }
+}
+
+// .u-font {
+//   &-base {
+//     font-family: var(--font-base)!important;
+//   }
+// 
+//   &-en {
+//     font-family: var(--font-en)!important;
+//   }
+// }
+
+
+// font-weight100〜900用 .u-weight-100 〜 u-weight-900
+@for $i from 1 through 9 {
+  .u-weight-#{$i * 100} {
+    font-weight: #{$i * 100} !important;
+  }
+}
+
+// margin-top用 5px毎 .u-mt5 〜 u-mt100
+@for $i from 1 through 20 {
+  .u-mt-#{$i * 5} {
+    margin-top: #{$i * 5}px !important;
+  }
+}
+
+// margin-bottom用 5px毎 .u-mb5 〜 u-mb100
+@for $i from 1 through 20 {
+  .u-mb-#{$i * 5} {
+    margin-bottom: #{$i * 5}px !important;
+  }
+}
+
+
