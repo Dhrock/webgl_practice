@@ -1,0 +1,74 @@
+@use './function' as *;
+/* ========================================
+mixin
+======================================== */
+
+//メディアクエリ使い方例
+// @include g.mq(md ,min) {} → @media screen and (min-width: 768px) {}
+// @include g.mq(md) {} → @media screen and (max-width: 767px) {}
+// @include g.mq(1000, min) {} → @media screen and (min-width: 1001px) {}
+// @include g.mq(1000) {} → @media screen and (max-width: 1000px) {}
+
+$breakpoint: (
+  //minの場合は+1pxされる
+  // 'xl': 1400,
+  // 'lg': 1024,
+  'md': 767,
+  'md-up': 768,
+  // 'sm': 480,
+) !default;
+
+@mixin mq($size: md, $type: max) {
+  $value: null;
+
+  // 数値が指定された場合はそのまま適用
+  @if (type-of($size) == number) {
+    $value: $size;
+  } @else {
+    $value: map-get($breakpoint, $size);
+  }
+
+  @if ($value == null) {
+    @error "ブレークポイント #{$size} が定義されていません";
+  }
+
+  // min-width の場合は +1px
+  @if ($type == min and type-of($size) != number) {
+    $value: $value + 1;
+  }
+
+  @media screen and (#{$type}-width: #{$value}px) {
+    @content;
+  }
+}
+
+
+
+
+@mixin hover-opacity($opacity:0.7) {
+  @media (hover: hover) {
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: $opacity;
+    }
+  }
+}
+
+@mixin object-fit($fit:cover) {
+  width: 100%;
+  height: 100%;
+  object-fit: $fit;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+// @mixin clamp($col) {
+//   display: -webkit-box;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   -webkit-line-clamp: $col;
+//   -webkit-box-orient: vertical;
+//   word-break: break-all;
+// }

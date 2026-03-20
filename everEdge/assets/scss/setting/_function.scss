@@ -1,0 +1,80 @@
+/* ========================================
+変数・関数
+======================================== */
+
+:root {
+  --color-black: #000;
+
+  --font-base:"Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+
+  --color-black: #000;
+  --color-bg: #FFF9ED;
+
+  --font-base: 'Noto Sans JP', sans-serif;
+  // --font-en: 'Overpass', 'Noto Sans JP', sans-serif;
+
+  // --mg-pc: 5vw;
+  // --mg-sp: calc(20 / 375 * 100vw);
+
+  --z-index-header: 100;
+  --z-index-header-logo: 102;
+  --z-index-menu: 101;
+  --z-index-menubtn: 102;
+}
+
+
+@function vw($window_width, $size) {
+	@return math.div($size, $window_width) * 100vw;
+}
+
+
+//レスポンシブルールに合わせたブロック要素や画像の幅
+@function res_size($base-size) {
+    @if $base-size < 0 {
+        @return max(calc($base-size / 1440 * 1800px) , calc($base-size / 1440 * 100vw));
+    }@else{
+        @return min(calc($base-size / 1440 * 100vw) , calc($base-size / 1440 * 1800px));
+    }
+}
+
+//レスポンシブルールに余白
+@function res_space($base-size) {
+    @if $base-size < 0 {
+        @return max(calc($base-size / 1440 * 1800px) , calc($base-size / 1440 * 100vw));
+    }@else{
+        @return min(calc($base-size / 1440 * 100vw) , calc($base-size / 1440 * 1800px));
+    }
+}
+
+//レスポンシブルールに合わせたフォントのサイズ（基準フォントサイズの+3が、最大サイズになるように設定する）
+@function res_font($base-size) {
+    @if $base-size < 0 {
+        @return clamp(calc($base-size / 1440 * 1710px)  , calc($base-size / 1440 * 100vw) , #{$base-size}px);
+    }@else{
+        @return clamp(#{$base-size}px , calc($base-size / 1440 * 100vw) , calc($base-size / 1440 * 1710px));
+    }
+}
+
+
+
+//レスポンシブルール　SP
+@function sp_size($base-size) {
+    @if $base-size < 0 {
+        @return max(calc($base-size / 375 * 100vw), #{$base-size}px);
+    }@else{
+        @return min(calc($base-size / 375 * 100vw), #{$base-size}px);
+    }
+}
+
+@function sp_space($base-size) {
+    @if $base-size < 0 {
+        @return max(calc($base-size / 375 * 100vw), #{$base-size}px);
+    }@else{
+        @return min(calc($base-size / 375 * 100vw), #{$base-size}px);
+    }
+}
+
+// remへの計算式（14pxを基準としている。10pxを基準とする場合は14を10に変更する）
+@function rem($pixels) {
+  @return math.div($pixels, 14) * 1rem;
+}

@@ -122,7 +122,7 @@ const material = new THREE.ShaderMaterial({
       float sliceCenter = sliceId + 0.5;
       float distFromMouse = sliceCenter - mousePos;
 
-      // 左右5枚分の範囲
+      // 左右8枚分の範囲
       float effectRange = 8.0;
 
       // マウスからの正規化距離（-1〜1、マウス直上が0）
