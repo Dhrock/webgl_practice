@@ -4,12 +4,12 @@
     {
       "format": "expanded", //expanded、nested、compact、compressed
       "extensionName": ".css",
-      "savePath": "./css"
+      "savePath": "~/../css"
     }
   ],
   // 拡張機能 Live Sass Compiler 限定
   "liveSassCompile.settings.includeItems": [
-    "./scss/style.scss"
+    "/**/assets/scss/style.scss"
   ],
   "liveSassCompile.settings.autoprefix": [
     // ベンダープレフィックス
