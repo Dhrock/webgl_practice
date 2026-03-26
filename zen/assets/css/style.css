@@ -1,0 +1,522 @@
+@charset "UTF-8";
+/* ========================================
+リセットCSS
+======================================== */
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  display: block;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+div {
+  overflow-wrap: break-word;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+iframe {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+span {
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+address {
+  font: inherit;
+}
+
+input,
+button,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+  vertical-align: middle;
+}
+
+button {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/* ========================================
+変数・関数
+======================================== */
+:root {
+  --color-black: #000;
+  --font-base:"Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  --color-black: #000;
+  --color-bg: #FFF9ED;
+  --font-base: 'Noto Sans JP', sans-serif;
+  --z-index-header: 100;
+  --z-index-header-logo: 102;
+  --z-index-menu: 101;
+  --z-index-menubtn: 102;
+}
+
+/* ========================================
+mixin
+======================================== */
+/* ========================================
+ベースCSS
+======================================== */
+body {
+  color: var(--color-black);
+  font-family: var(--font-base);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+   -ms-text-size-adjust: 100%;
+       text-size-adjust: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* CLEAR-FIX */
+/* ========================================
+モジュール・パーツ m-
+======================================== */
+.m-inner {
+  width: 96%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media screen and (max-width: 767px) {
+  .m-inner {
+    width: 90%;
+  }
+}
+
+/* ========================================
+補助的に使用 u-
+======================================== */
+@media screen and (max-width: 768px) {
+  .u-sp {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .u-pc {
+    display: none !important;
+  }
+}
+
+.u-ib {
+  display: inline-block !important;
+}
+
+.u-text-center {
+  text-align: center !important;
+}
+.u-text-left {
+  text-align: left !important;
+}
+.u-text-right {
+  text-align: right !important;
+}
+
+.u-weight-100 {
+  font-weight: 100 !important;
+}
+
+.u-weight-200 {
+  font-weight: 200 !important;
+}
+
+.u-weight-300 {
+  font-weight: 300 !important;
+}
+
+.u-weight-400 {
+  font-weight: 400 !important;
+}
+
+.u-weight-500 {
+  font-weight: 500 !important;
+}
+
+.u-weight-600 {
+  font-weight: 600 !important;
+}
+
+.u-weight-700 {
+  font-weight: 700 !important;
+}
+
+.u-weight-800 {
+  font-weight: 800 !important;
+}
+
+.u-weight-900 {
+  font-weight: 900 !important;
+}
+
+.u-mt-5 {
+  margin-top: 5px !important;
+}
+
+.u-mt-10 {
+  margin-top: 10px !important;
+}
+
+.u-mt-15 {
+  margin-top: 15px !important;
+}
+
+.u-mt-20 {
+  margin-top: 20px !important;
+}
+
+.u-mt-25 {
+  margin-top: 25px !important;
+}
+
+.u-mt-30 {
+  margin-top: 30px !important;
+}
+
+.u-mt-35 {
+  margin-top: 35px !important;
+}
+
+.u-mt-40 {
+  margin-top: 40px !important;
+}
+
+.u-mt-45 {
+  margin-top: 45px !important;
+}
+
+.u-mt-50 {
+  margin-top: 50px !important;
+}
+
+.u-mt-55 {
+  margin-top: 55px !important;
+}
+
+.u-mt-60 {
+  margin-top: 60px !important;
+}
+
+.u-mt-65 {
+  margin-top: 65px !important;
+}
+
+.u-mt-70 {
+  margin-top: 70px !important;
+}
+
+.u-mt-75 {
+  margin-top: 75px !important;
+}
+
+.u-mt-80 {
+  margin-top: 80px !important;
+}
+
+.u-mt-85 {
+  margin-top: 85px !important;
+}
+
+.u-mt-90 {
+  margin-top: 90px !important;
+}
+
+.u-mt-95 {
+  margin-top: 95px !important;
+}
+
+.u-mt-100 {
+  margin-top: 100px !important;
+}
+
+.u-mb-5 {
+  margin-bottom: 5px !important;
+}
+
+.u-mb-10 {
+  margin-bottom: 10px !important;
+}
+
+.u-mb-15 {
+  margin-bottom: 15px !important;
+}
+
+.u-mb-20 {
+  margin-bottom: 20px !important;
+}
+
+.u-mb-25 {
+  margin-bottom: 25px !important;
+}
+
+.u-mb-30 {
+  margin-bottom: 30px !important;
+}
+
+.u-mb-35 {
+  margin-bottom: 35px !important;
+}
+
+.u-mb-40 {
+  margin-bottom: 40px !important;
+}
+
+.u-mb-45 {
+  margin-bottom: 45px !important;
+}
+
+.u-mb-50 {
+  margin-bottom: 50px !important;
+}
+
+.u-mb-55 {
+  margin-bottom: 55px !important;
+}
+
+.u-mb-60 {
+  margin-bottom: 60px !important;
+}
+
+.u-mb-65 {
+  margin-bottom: 65px !important;
+}
+
+.u-mb-70 {
+  margin-bottom: 70px !important;
+}
+
+.u-mb-75 {
+  margin-bottom: 75px !important;
+}
+
+.u-mb-80 {
+  margin-bottom: 80px !important;
+}
+
+.u-mb-85 {
+  margin-bottom: 85px !important;
+}
+
+.u-mb-90 {
+  margin-bottom: 90px !important;
+}
+
+.u-mb-95 {
+  margin-bottom: 95px !important;
+}
+
+.u-mb-100 {
+  margin-bottom: 100px !important;
+}
+
+/* ========================================
+header
+======================================== */
+/* ========================================
+footer
+======================================== */
+/* ========================================
+メニュー
+======================================== */
+/* ========================================
+共通で使うレイアウト l-
+======================================== */
+/* ========================================
+common
+======================================== */
+body {
+  margin: 0;
+  background-color: #ffffff;
+}
+
+h2 {
+  margin: 100px auto 30px;
+  width: 90%;
+  font-size: 26px;
+}
+
+#container {
+  margin: 100px auto;
+  display: block;
+  width: 70%;
+  height: auto;
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  position: relative;
+}
+#container img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  opacity: 0;
+  visibility: hidden;
+}
+#container canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ========================================
+hover-effect
+======================================== */
+.hover-effect img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  opacity: 0;
+}
+.hover-effect canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hover-effect .flexbox-col2 {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 90%;
+  margin: 0 auto 100px;
+}
+.hover-effect .flexbox-col2 .container {
+  display: block;
+  width: 48%;
+  height: auto;
+  aspect-ratio: 3/2;
+  position: relative;
+}
+.hover-effect .flexbox-col2 .container.-long {
+  aspect-ratio: 645/900;
+}
+.hover-effect .flexbox-col2 .container p {
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  font-size: 18px;
+  z-index: 1;
+}
+.hover-effect .flexbox-col3 {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 90%;
+  margin: 0 auto 100px;
+}
+.hover-effect .flexbox-col3 .container {
+  display: block;
+  width: 30%;
+  height: auto;
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  position: relative;
+}
+.hover-effect .mv {
+  width: 70%;
+  margin: 0 auto 100px;
+}
+.hover-effect .mv .container {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 645/900;
+  overflow: hidden;
+  position: relative;
+}
+.hover-effect .mv .container + .container {
+  margin-top: 100px;
+}
+
+/* ========================================
+mv-interaction
+======================================== */
+.mv-interaction {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+.mv-interaction .mv-img {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.mv-interaction canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mv-interaction .container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
