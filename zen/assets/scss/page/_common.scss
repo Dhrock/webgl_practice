@@ -16,21 +16,10 @@ h2 {
 
 // index.html
 #container { 
-  margin: 100px auto;
   display: block;
-  width: 70%;
-  height: auto;
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
+  width: 100%;
+  height: 100vh;
   position: relative;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    visibility: hidden;
-  }
 
   canvas {
     position: absolute;
