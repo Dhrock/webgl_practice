@@ -1,2 +1,24 @@
 {
+  // 拡張機能 Live Sass Compiler
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded", //expanded、nested、compact、compressed
+      "extensionName": ".css",
+      "savePath": "./css"
+    }
+  ],
+  // 拡張機能 Live Sass Compiler 限定
+  "liveSassCompile.settings.includeItems": [
+    "./scss/style.scss"
+  ],
+  "liveSassCompile.settings.autoprefix": [
+    // ベンダープレフィックス
+    "> 10%",
+    "last 2 versions"
+  ],
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "liveServer.settings.port": 5502,
+  // mapファイルを非生成
+  "liveSassCompile.settings.generateMap": false
 }

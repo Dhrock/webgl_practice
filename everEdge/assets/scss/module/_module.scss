@@ -1,0 +1,35 @@
+@use '../setting/global' as *;
+
+/* ========================================
+モジュール・パーツ m-
+======================================== */
+// .m-textBox {
+//   p {
+//     +p {
+//       margin-top: 2em;
+
+//       @include mq() {
+//         margin-top: $lineHeight-sp + em;
+//       }
+//     }
+//   }
+// }
+
+// .m-hover {
+//   &-opacity {
+//     a {
+//       @include hover-opacity();
+//     }
+//   }
+// }
+
+.m-inner {
+  width: 96%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @include mq() {
+    width: 90%;
+  }
+}

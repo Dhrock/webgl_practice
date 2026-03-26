@@ -1,24 +1,14 @@
-body { 
-  margin: 0;
-  background-color: #F4F0EC;
-}
+@use '../setting/global' as *;
+/* ========================================
+hover-effect
+======================================== */
 
-// index.html
-#container { 
-  margin: 100px auto;
-  display: block;
-  width: 70%;
-  height: auto;
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
-  position: relative;
-
+.hover-effect {
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    visibility: hidden;
   }
 
   canvas {
@@ -27,23 +17,32 @@ body {
     width: 100%;
     height: 100%;
   }
-}
 
-// ホバーエフェクトページ
-.hover-effect {
   .flexbox-col2 {
     display: flex;
     justify-content: space-between;
     width: 90%;
-    margin: 100px auto;
+    margin: 0 auto 100px;
     
     .container { 
       display: block;
       width: 48%;
       height: auto;
       aspect-ratio: 3 / 2;
-      overflow: hidden;
+      // overflow: hidden;
       position: relative;
+
+      &.-long {
+        aspect-ratio: 645 / 900;
+      }
+
+      p {
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        font-size: 18px;
+        z-index: 1;
+      }
     }
   }
 
@@ -51,7 +50,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 90%;
-    margin: 100px auto;
+    margin: 0 auto 100px;
     
     .container { 
       display: block;
@@ -63,19 +62,20 @@ body {
     }
   }
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-  }
+  .mv {
+    width: 70%;
+    margin: 0 auto 100px;
 
-  canvas {
-    // opacity: 0;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
+    .container {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 645 / 900;
+      overflow: hidden;
+      position: relative;
 
+      &+.container {
+        margin-top: 100px;
+      }
+    }
+  }
 }
