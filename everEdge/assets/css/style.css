@@ -93,7 +93,7 @@ button {
 ======================================== */
 :root {
   --color-black: #000;
-  --font-base:"Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  --font-base:"Noto Sans", "Noto Sans JP", sans-serif;
   --color-black: #000;
   --color-bg: #FFF9ED;
   --font-base: 'Noto Sans JP', sans-serif;
@@ -519,4 +519,49 @@ mv-interaction
   height: 100%;
   overflow: hidden;
   position: relative;
+}
+
+/* ========================================
+font scale
+======================================== */
+.p-font-scale {
+  padding: min(4.1666666667vw, 75px);
+  font-family: var(--font-base);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  gap: 13%;
+}
+.p-font-scale__normal {
+  width: 74%;
+}
+.p-font-scale__scaled {
+  width: 74%;
+}
+.p-font-scale__scaled * {
+  -webkit-transform: scale(0.8, 1);
+          transform: scale(0.8, 1);
+  -webkit-transform-origin: left center;
+          transform-origin: left center;
+}
+.p-font-scale h1 {
+  margin: 0;
+  width: auto;
+  font-size: 32px;
+}
+.p-font-scale h1.-jp {
+  margin-top: min(2.7777777778vw, 50px);
+}
+.p-font-scale h2 {
+  margin: min(2.7777777778vw, 50px) 0 0;
+  width: auto;
+  font-size: 26px;
+}
+.p-font-scale p {
+  margin: min(2.7777777778vw, 50px) 0 0;
+  width: auto;
+  font-size: 16px;
 }
