@@ -57,7 +57,7 @@ const vertexShader = `
 
 const mouse = new THREE.Vector2(-1, 0);
 const targetMouse = new THREE.Vector2(-1, 0);
-let targetMouseX = container.clientWidth / 2;
+let targetMouseX = container.clientWidth / 2; // マウスX位置の物理ピクセル単位での初期位置
 
 const pcUniforms = {
   ...sharedUniforms,
@@ -421,7 +421,7 @@ function resizeToContainer() {
   const height = container.clientHeight;
   if (!width || !height) return;
 
-  const dpr = Math.min(window.devicePixelRatio, 2);
+  const dpr = window.devicePixelRatio;
   renderer.setPixelRatio(dpr);
 
   // 物理ピクセルサイズでコンテナ解像度を更新（共通uniform）

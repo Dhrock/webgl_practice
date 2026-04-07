@@ -181,17 +181,10 @@ containers.forEach((container) => {
     // 固定カメラのため射影行列の更新不要（cover補正はシェーダーが担う）
 
     // デバイスピクセル比を考慮してレンダラーサイズを調整
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    if (window.devicePixelRatio === 2) {
-      uniforms.uContainerResolution.value.set(width * 2, height * 2);
-      uniforms.uSliceWidth.value = slideWidth * 2; // デバイスピクセル比が2の場合はスライス幅も倍にする
-    } else {
-      uniforms.uContainerResolution.value.set(width, height);
-      uniforms.uSliceWidth.value = slideWidth; // デバイスピクセル比が1の場合はスライス幅を元に戻す
-    }
-
-    uniforms.uSliceWidth.value = width / sliceNum; // スライス幅をリサイズに応じて再計算
+    renderer.setPixelRatio(window.devicePixelRatio);
+    
+    uniforms.uContainerResolution.value.set(width * window.devicePixelRatio, height * window.devicePixelRatio); // デバイスピクセル比を考慮して解像度を更新
+    uniforms.uSliceWidth.value = (width * window.devicePixelRatio) / sliceNum; // スライス幅をリサイズに応じて再計算
 
     renderer.setSize(width, height, false);
     renderer.render(scene, camera);
