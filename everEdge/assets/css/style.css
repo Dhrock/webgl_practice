@@ -443,12 +443,31 @@ hover-effect
   width: 90%;
   margin: 0 auto 100px;
 }
+@media screen and (max-width: 767px) {
+  .hover-effect .flexbox-col2 {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    gap: 30px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .hover-effect .flexbox-col2.-minute-slice {
+    gap: 50px;
+  }
+}
 .hover-effect .flexbox-col2 .container {
   display: block;
   width: 48%;
   height: auto;
   aspect-ratio: 3/2;
   position: relative;
+}
+@media screen and (max-width: 767px) {
+  .hover-effect .flexbox-col2 .container {
+    width: 100%;
+  }
 }
 .hover-effect .flexbox-col2 .container.-long {
   aspect-ratio: 645/900;
@@ -470,6 +489,15 @@ hover-effect
   width: 90%;
   margin: 0 auto 100px;
 }
+@media screen and (max-width: 767px) {
+  .hover-effect .flexbox-col3 {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    gap: 30px;
+  }
+}
 .hover-effect .flexbox-col3 .container {
   display: block;
   width: 30%;
@@ -478,9 +506,19 @@ hover-effect
   overflow: hidden;
   position: relative;
 }
+@media screen and (max-width: 767px) {
+  .hover-effect .flexbox-col3 .container {
+    width: 100%;
+  }
+}
 .hover-effect .mv {
   width: 70%;
   margin: 0 auto 100px;
+}
+@media screen and (max-width: 767px) {
+  .hover-effect .mv {
+    width: 100%;
+  }
 }
 .hover-effect .mv .container {
   width: 100%;

@@ -23,6 +23,17 @@ hover-effect
     justify-content: space-between;
     width: 90%;
     margin: 0 auto 100px;
+
+    @include mq() {
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    &.-minute-slice {
+      @include mq() {
+        gap: 50px;
+      }
+    }
     
     .container { 
       display: block;
@@ -31,6 +42,10 @@ hover-effect
       aspect-ratio: 3 / 2;
       // overflow: hidden;
       position: relative;
+
+      @include mq() {
+        width: 100%;
+      }
 
       &.-long {
         aspect-ratio: 645 / 900;
@@ -51,6 +66,11 @@ hover-effect
     justify-content: space-between;
     width: 90%;
     margin: 0 auto 100px;
+
+    @include mq() {
+      flex-direction: column;
+      gap: 30px;
+    }
     
     .container { 
       display: block;
@@ -59,12 +79,20 @@ hover-effect
       aspect-ratio: 3 / 2;
       overflow: hidden;
       position: relative;
+
+      @include mq() {
+        width: 100%;
+      }
     }
   }
 
   .mv {
     width: 70%;
     margin: 0 auto 100px;
+
+    @include mq() {
+      width: 100%;
+    }
 
     .container {
       width: 100%;
