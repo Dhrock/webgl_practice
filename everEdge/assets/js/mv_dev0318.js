@@ -5,10 +5,27 @@
 
 const container = document.querySelector('.container');
 const BREAKPOINT = 767;
-const SLICE_NUM = 27;
-const FADE_DURATION = 1.5;       // フェード秒数
-const SLIDE_INTERVAL = 5.0;      // 自動切替間隔（秒）
-const FADE_EASING = 0.03;        // フェード補間係数（毎フレーム）
+
+// PCの設定
+const PC_SLICE_NUM = 27;
+const PC_EFFECT_RANGE = 8.0;
+
+// SPの設定
+const SP_SLICE_NUM = 14;
+const SP_EFFECT_RANGE = 7.0;
+const SP_POINT_MARGIN = (SP_EFFECT_RANGE * 2.0) / SP_SLICE_NUM;
+const SP_POINT_START = -1.0 - SP_POINT_MARGIN;
+const SP_POINT_END = 1.0 + SP_POINT_MARGIN;
+const SP_POINT_LEAD_TIME = 0.4;  // SPの点Pをフェード開始より先行させる秒数
+
+// フェード切替のパラメータ
+const FADE_DURATION = 2.0;       // フェード秒数
+const SLIDE_INTERVAL = 6.0;      // 自動切替間隔（秒）
+const FADE_EASING = 0.025;        // フェード補間係数（毎フレーム）
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4.0 * t * t * t : 1.0 - Math.pow(-2.0 * t + 2.0, 3.0) / 2.0;
+}
 
 // ============================================================
 // 1. Basic Three.js Setup
@@ -62,7 +79,8 @@ let targetMouseX = container.clientWidth / 2; // マウスX位置の物理ピク
 const pcUniforms = {
   ...sharedUniforms,
   uMouse:      { value: mouse },
-  uSliceWidth: { value: container.clientWidth / SLICE_NUM },
+  uSliceWidth: { value: container.clientWidth / PC_SLICE_NUM },
+  uEffectRange: { value: PC_EFFECT_RANGE },
   uMouseX:     { value: targetMouseX },
 };
 
@@ -75,6 +93,7 @@ const pcFragmentShader = `
   uniform vec2 uContainerResolution;
   uniform vec2 uImageResolution;
   uniform float uSliceWidth;
+  uniform float uEffectRange;
   uniform float uMouseX;
 
   void main() {
@@ -104,7 +123,7 @@ const pcFragmentShader = `
     float sliceCenter = sliceId + 0.5;
     float distFromMouse = sliceCenter - mousePos;
 
-    float effectRange = 8.0;
+    float effectRange = uEffectRange;
     float normalized = clamp(distFromMouse / effectRange, -1.0, 1.0);
     float inRange = 1.0 - smoothstep(effectRange - 1.0, effectRange, abs(distFromMouse));
 
@@ -146,11 +165,14 @@ const pcMaterial = new THREE.ShaderMaterial({
 });
 
 // ============================================================
-// 5. SP Material（cover補正 + テクスチャmix のみ）
+// 5. SP Material（スライス歪み + 自動移動点P + テクスチャmix）
 // ============================================================
 
 const spUniforms = {
   ...sharedUniforms,
+  uPointX:     { value: SP_POINT_START },
+  uSliceWidth: { value: container.clientWidth / SP_SLICE_NUM },
+  uEffectRange: { value: SP_EFFECT_RANGE },
 };
 
 const spFragmentShader = `
@@ -160,6 +182,9 @@ const spFragmentShader = `
   uniform float uMixFactor;
   uniform vec2 uContainerResolution;
   uniform vec2 uImageResolution;
+  uniform float uPointX;
+  uniform float uSliceWidth;
+  uniform float uEffectRange;
 
   void main() {
     // --- object-fit: cover 補正 ---
@@ -169,15 +194,52 @@ const spFragmentShader = `
     float scaleU = r < 1.0 ? r : 1.0;
     float scaleV = r >= 1.0 ? 1.0 / r : 1.0;
 
-    vec2 coverUv = vec2(
-      (vUv.x - 0.5) * scaleU + 0.5,
-      (vUv.y - 0.5) * scaleV + 0.5
-    );
-    coverUv = clamp(coverUv, 0.0, 1.0);
+    // cover補正済みUV
+    float coverU = (vUv.x - 0.5) * scaleU + 0.5;
+    float coverV = (vUv.y - 0.5) * scaleV + 0.5;
+
+    // ---------- screen slices ----------
+    float sliceWidth = uSliceWidth;
+    float totalSlices = floor(uContainerResolution.x / sliceWidth);
+    float sliceId = floor(gl_FragCoord.x / sliceWidth);
+    float localX = fract(gl_FragCoord.x / sliceWidth);
+
+    // 点Pを物理ピクセル座標へ変換。画面外の値も使って、フェード前後の歪みを消す。
+    float pointX = (uPointX + 1.0) * 0.5 * uContainerResolution.x;
+    float pointPos = pointX / sliceWidth;
+
+    // 現在スライスの中心と点Pの連続的な距離（符号付き）
+    float sliceCenter = sliceId + 0.5;
+    float distFromPoint = sliceCenter - pointPos;
+
+    float effectRange = uEffectRange;
+    float normalized = clamp(distFromPoint / effectRange, -1.0, 1.0);
+    float inRange = 1.0 - smoothstep(effectRange - 1.0, effectRange, abs(distFromPoint));
+
+    // ---------- スライスのUV範囲を計算 ----------
+    float distortionStrength = 0.1;
+    float sliceCenterScreen = (sliceId + 0.5) * sliceWidth / uContainerResolution.x;
+    float sliceCenterU = (sliceCenterScreen - 0.5) * scaleU + 0.5;
+
+    float offset = -0.0 * distortionStrength * normalized;
+
+    // ---------- compression ----------
+    float compressionStrength = 0.5;
+    float compression = 1.0 - compressionStrength * pow(1.0 - abs(normalized), 1.0);
+
+    float localShiftScale = 5.0 * (1.0 - smoothstep(0.1, 1.0, abs(normalized) - 0.1));
+    float localOffset = (localX - 0.5) * (sliceWidth / uContainerResolution.x) * compression * scaleU * localShiftScale;
+
+    // ---------- final uv ----------
+    float distortedU = sliceCenterU + offset + localOffset;
+    float finalU = mix(coverU, distortedU, inRange);
+
+    vec2 finalUv = vec2(finalU, coverV);
+    finalUv = clamp(finalUv, 0.0, 1.0);
 
     // --- テクスチャフェードサンプリング ---
-    vec4 color1 = texture2D(uTexture1, coverUv);
-    vec4 color2 = texture2D(uTexture2, coverUv);
+    vec4 color1 = texture2D(uTexture1, finalUv);
+    vec4 color2 = texture2D(uTexture2, finalUv);
     gl_FragColor = mix(color1, color2, uMixFactor);
   }
 `;
@@ -250,6 +312,8 @@ const textureState = {
   currentDevice: null,        // 'pc' or 'sp'
   currentIndex: 0,            // 現在表示中の画像インデックス
   isFading: false,            // フェード中フラグ
+  isPointLeading: false,      // SPの点Pだけ先行移動中
+  pointLeadStartedAt: 0,      // 点Pの先行開始時刻
   targetMixFactor: 0.0,       // uMixFactor の目標値
   autoTimer: null,            // 自動切替タイマー
 };
@@ -261,6 +325,9 @@ async function initTextures(device) {
 
   textureState.currentDevice = device;
   textureState.currentIndex = 0;
+  textureState.isFading = false;
+  textureState.isPointLeading = false;
+  textureState.targetMixFactor = 0.0;
 
   const firstTexture = await loadTexture(urls[0]);
 
@@ -271,6 +338,7 @@ async function initTextures(device) {
   sharedUniforms.uTexture1.value = firstTexture;
   sharedUniforms.uTexture2.value = firstTexture;
   sharedUniforms.uMixFactor.value = 0.0;
+  spUniforms.uPointX.value = SP_POINT_START;
 
   // 自動切替を開始
   startAutoSlide(device);
@@ -278,7 +346,7 @@ async function initTextures(device) {
 
 // 次のテクスチャへフェード遷移
 async function fadeToNext() {
-  if (textureState.isFading) return;
+  if (textureState.isFading || textureState.isPointLeading) return;
 
   const device = textureState.currentDevice;
   const urls = device === 'pc' ? pcImageUrls : spImageUrls;
@@ -297,19 +365,28 @@ async function fadeToNext() {
 
   // フェード開始: uMixFactor を 0 → 1 に補間
   sharedUniforms.uMixFactor.value = 0.0;
+  spUniforms.uPointX.value = SP_POINT_START;
   textureState.targetMixFactor = 1.0;
-  textureState.isFading = true;
   textureState.currentIndex = nextIndex;
+
+  if (device === 'sp') {
+    textureState.isPointLeading = true;
+    textureState.pointLeadStartedAt = performance.now();
+  } else {
+    textureState.isFading = true;
+  }
 }
 
 // フェード完了時のスワップ処理
 function onFadeComplete() {
   textureState.isFading = false;
+  textureState.isPointLeading = false;
 
   // スワップ: uTexture1 を現在の uTexture2 に、uMixFactor を 0 に戻す
   const oldTexture1 = sharedUniforms.uTexture1.value;
   sharedUniforms.uTexture1.value = sharedUniforms.uTexture2.value;
   sharedUniforms.uMixFactor.value = 0.0;
+  spUniforms.uPointX.value = SP_POINT_START;
   textureState.targetMixFactor = 0.0;
 
   // 古いテクスチャが新しいテクスチャと異なれば VRAM から解放
@@ -392,6 +469,21 @@ function animate() {
   mouse.x += (targetMouse.x - mouse.x) * 0.3;
   pcUniforms.uMouseX.value += (targetMouseX - pcUniforms.uMouseX.value) * 0.15;
 
+  const spPointLeadRatio = SP_POINT_LEAD_TIME / (SP_POINT_LEAD_TIME + FADE_DURATION);
+
+  // --- SP 点Pの先行移動 ---
+  if (textureState.isPointLeading) {
+    const elapsed = (performance.now() - textureState.pointLeadStartedAt) / 1000;
+    const leadProgress = Math.min(elapsed / SP_POINT_LEAD_TIME, 1.0) * spPointLeadRatio;
+    spUniforms.uPointX.value = SP_POINT_START + (SP_POINT_END - SP_POINT_START) * leadProgress;
+
+    if (elapsed >= SP_POINT_LEAD_TIME) {
+      textureState.isPointLeading = false;
+      textureState.isFading = true;
+      sharedUniforms.uMixFactor.value = 0.0;
+    }
+  }
+
   // --- テクスチャフェード補間 ---
   if (textureState.isFading) {
     const current = sharedUniforms.uMixFactor.value;
@@ -401,9 +493,16 @@ function animate() {
     // ほぼ到達したら完了処理
     if (Math.abs(newVal - target) < 0.005) {
       sharedUniforms.uMixFactor.value = target;
+      if (currentMode === 'sp') {
+        spUniforms.uPointX.value = SP_POINT_END;
+      }
       onFadeComplete();
     } else {
       sharedUniforms.uMixFactor.value = newVal;
+      if (currentMode === 'sp') {
+        const pointProgress = Math.min(spPointLeadRatio + (1.0 - spPointLeadRatio) * newVal, 1.0);
+        spUniforms.uPointX.value = SP_POINT_START + (SP_POINT_END - SP_POINT_START) * pointProgress;
+      }
     }
   }
 
@@ -429,8 +528,9 @@ function resizeToContainer() {
   const physicalHeight = height * dpr;
   sharedUniforms.uContainerResolution.value.set(physicalWidth, physicalHeight);
 
-  // PC固有: スライス幅を物理ピクセル単位で再計算
-  pcUniforms.uSliceWidth.value = physicalWidth / SLICE_NUM;
+  // デバイスごとのスライス幅を物理ピクセル単位で再計算
+  pcUniforms.uSliceWidth.value = physicalWidth / PC_SLICE_NUM;
+  spUniforms.uSliceWidth.value = physicalWidth / SP_SLICE_NUM;
 
   renderer.setSize(width, height, false);
   renderer.render(scene, camera);
