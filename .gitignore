@@ -1,2 +1,7 @@
 .claude
 *.docx
+
+.htaccess
+.htpassword
+
+.DS_Store
